@@ -6,13 +6,17 @@ Como estudiante de **Ingeniería Civil en Informática (PUCV)**, uso este espaci
 
 ---
 
-## 📂 Directorio de Proyectos
+## 📂 Proyectos Destacados
 
-| Proyecto | Tecnología | Descripción |
-| :--- | :--- | :--- |
-| **🚀 GameZone** | Astro + Tailwind | Mi espacio para probar mecánicas de juegos y componentes web. |
-| **💼 Experts** | HTML/CSS/JS | Landing page enfocada en marketing digital y servicios profesionales. |
-| **🕹️ GamesAPI** | Node.js / Express | Una API diseñada para gestionar datos relacionados con videojuegos. |
+### 🕹️ GameZone (Full-stack)
+Es el proyecto principal de este laboratorio. Integra una interfaz moderna desarrollada con **Astro** y **Tailwind CSS**, conectada a una **API propia** construida en **Node.js**. 
+* **Objetivo:** Gestionar y visualizar información de videojuegos de forma eficiente.
+* **Stack:** Astro, JavaScript, Node.js, Express.
+
+### 💼 Experts (Freelance)
+Desarrollo de una landing page profesional para una agencia de marketing digital.
+* **Objetivo:** Optimizar la presencia online y la conversión de clientes.
+* **Stack:** HTML5, CSS3 (Tailwind), JavaScript.
 
 ---
 
