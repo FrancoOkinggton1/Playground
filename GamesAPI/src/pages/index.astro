@@ -1,0 +1,63 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Hero from '../components/Hero.astro';	
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import ChatBot from '../components/Chatbot.astro'; // 1. Importar
+import { getGames } from '../services/rawg'; 
+
+const search = Astro.url.searchParams.get('q');
+const genre = Astro.url.searchParams.get('genre');
+const games = await getGames(search || undefined, genre || undefined);
+---
+
+<Layout title="Buscador de Juegos - GameZone">
+    
+    <Header />
+    <Hero 
+        title="Fragmentos de Otros Mundos"
+        subtitle="Reúne las piezas de tu próxima gran aventura en nuestro universo de juegos."
+    />
+	
+    <main id="catalogo" class="max-w-6xl mx-auto p-8 scroll-mt-24">
+        <h1 class="text-4xl font-bold text-center mb-8 mt-4">Explora el Catálogo</h1>
+
+        <form action="/" class="max-w-lg mx-auto mb-10">
+            <div class="relative">
+                <input 
+                    type="text" 
+                    name="q" 
+                    value={search} 
+                    placeholder="Busca un juego..." 
+                    class="w-full bg-slate-800 text-white border border-slate-700 rounded-full px-6 py-3 focus:outline-none focus:border-blue-500 transition shadow-lg"
+                />
+                <button type="submit" class="absolute right-2 top-1 bottom-1 bg-blue-600 hover:bg-blue-700 px-4 rounded-full transition font-bold">
+                    🔍
+                </button>
+            </div>
+        </form>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {games.map((game: any) => (
+                <article class="bg-slate-800 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl hover:-translate-y-2 transition duration-300 border border-slate-700 group flex flex-col h-full">
+                <a href={`/game/${game.slug}`} class="h-48 overflow-hidden relative block">
+                  <img 
+                         src={game.background_image} 
+                         alt={game.name} 
+                          class="w-full h-full object-cover group-hover:scale-110 transition duration-500"
+                     />
+                 </a>
+                    <div class="p-5 flex flex-col flex-grow">
+                        <h2 class="text-xl font-bold mb-2">{game.name}</h2>
+                        <div class="mt-auto flex justify-between items-center text-slate-400 text-xs">
+                            <span>⭐ {game.rating}</span>
+                            <span>📅 {game.released?.slice(0,4)}</span>
+                        </div>
+                    </div>
+                </article>
+            ))}
+        </div>
+    </main>
+     <Footer />
+     <ChatBot />
+</Layout>

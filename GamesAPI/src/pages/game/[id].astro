@@ -1,0 +1,164 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import ChatBot from '../../components/Chatbot.astro';
+import { getGameDetails } from '../../services/rawg';
+
+// 1. Obtener el "slug" (id) de la URL
+const { id } = Astro.params;
+
+if (!id) {
+  return Astro.redirect('/');
+}
+
+// 2. Obtener los datos del juego
+const game = await getGameDetails(id);
+
+if (!game) {
+  return Astro.redirect('/404');
+}
+
+// --- FUNCIONES DE APOYO ---
+
+const formatDate = (dateString: string) => {
+  if (!dateString) return 'N/A';
+  return new Date(dateString).toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' });
+};
+
+const getRatingColor = (rating: number) => {
+    if (rating >= 4.5) return 'badge-success'; 
+    if (rating >= 3.5) return 'badge-info';    
+    return 'badge-warning';                    
+};
+
+const getStoreIcon = (storeName: string): string => {
+  const name = storeName.toLowerCase();
+  
+  if (name.includes('steam')) return 'https://img.icons8.com/color/48/steam.png';
+  if (name.includes('playstation')) return 'https://img.icons8.com/?size=100&id=12519&format=png&color=000000';
+  if (name.includes('xbox')) return 'https://img.icons8.com/color/48/xbox.png';
+  if (name.includes('nintendo')) return "https://img.icons8.com/forma-bold-filled-sharp/24/nintendo-switch.png"; 
+  if (name.includes('epic games')) return 'https://img.icons8.com/color/48/epic-games.png';
+  if (name.includes('gog')) return 'https://img.icons8.com/external-tal-revivo-filled-tal-revivo/24/external-gog-a-digital-distribution-platform-for-video-games-and-films-logo-filled-tal-revivo.png';
+  if (name.includes('app store')) return 'https://img.icons8.com/color/48/apple-app-store--v1.png';
+  if (name.includes('google play')) return 'https://img.icons8.com/color/48/google-play.png';
+
+  return 'https://img.icons8.com/color/48/shop.png'; 
+};
+---
+
+<Layout title={`${game.name} - Detalles en GameZone`}>
+    <Header />
+
+    <div class="relative h-[50vh] w-full overflow-hidden">
+        <div class="absolute inset-0 bg-cover bg-center" style={`background-image: url('${game.background_image_additional || game.background_image}');`}></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/70 to-transparent"></div>
+        
+        <div class="relative z-10 h-full max-w-6xl mx-auto flex flex-col justify-end p-8 pb-12">
+            <div class="flex flex-wrap items-center gap-4 mb-4">
+                <span class={`badge ${getRatingColor(game.rating)} badge-lg font-bold`}>⭐ {game.rating} / 5</span>
+                <span class="text-slate-300">📅 {formatDate(game.released)}</span>
+                {game.playtime > 0 && <span class="text-slate-300">⏱️ {game.playtime} horas media</span>}
+            </div>
+            <h1 class="text-5xl md:text-6xl font-extrabold text-white tracking-tight drop-shadow-lg">{game.name}</h1>
+        </div>
+    </div>
+
+    <main class="max-w-6xl mx-auto p-8 grid grid-cols-1 lg:grid-cols-3 gap-10">
+        
+        <div class="lg:col-span-2 space-y-10">
+            <section>
+                <h2 class="text-2xl font-bold mb-6 flex items-center gap-2"> Sobre {game.name}</h2>
+                <div class="prose prose-invert prose-slate max-w-none text-slate-300 leading-relaxed" set:html={game.description}></div>
+            </section>
+            
+            <section class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-800/50 p-6 rounded-2xl border border-slate-700">
+                <div>
+                    <h3 class="text-slate-400 font-semibold mb-2">Plataformas</h3>
+                    <div class="flex flex-wrap gap-2">
+                        {game.platforms?.map((p: any) => (
+                            <span class="badge badge-outline badge-info">{p.platform.name}</span>
+                        ))}
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-slate-400 font-semibold mb-2">Géneros</h3>
+                    <div class="flex flex-wrap gap-2">
+                        {game.genres?.map((g: any) => (
+                            <span class="badge badge-outline">{g.name}</span>
+                        ))}
+                    </div>
+                </div>
+                 <div>
+                    <h3 class="text-slate-400 font-semibold mb-2">Desarrollador</h3>
+                     <div class="flex flex-wrap gap-2">
+                        {game.developers?.map((d: any) => (
+                             <span class="text-slate-200">{d.name}</span>
+                         ))}
+                    </div>
+                </div>
+                 <div>
+                    <h3 class="text-slate-400 font-semibold mb-2">Editor (Publisher)</h3>
+                    <div class="flex flex-wrap gap-2">
+                         {game.publishers?.map((p: any) => (
+                             <span class="text-slate-200">{p.name}</span>
+                         ))}
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div class="space-y-10">
+           
+             {game.screenshots && game.screenshots.length > 0 && (
+                 <section>
+                    <div class="grid grid-cols-2 gap-3">
+                        {game.screenshots.slice(0, 6).map((screenshot: any, index: number) => (
+                            <div class={`rounded-lg overflow-hidden shadow-md hover:opacity-90 transition cursor-pointer ${index === 0 ? 'col-span-2 row-span-2' : ''}`}>
+                                <img src={screenshot.image} alt="Screenshot" class="w-full h-full object-cover" loading="lazy" />
+                            </div>
+                        ))}
+                    </div>
+                </section>
+            )}
+
+
+            {game.stores && game.stores.length > 0 && (
+                <section class="bg-slate-800/50 p-6 rounded-2xl border border-slate-700 shadow-lg backdrop-blur-sm">
+                    <h2 class="text-xl font-bold mb-6 flex items-center gap-2 text-white">
+                        🛒 Dónde comprar
+                    </h2>
+                    <div class="flex flex-col gap-3">
+                        {game.stores.map((storeObj: any) => {
+                            const iconUrl = getStoreIcon(storeObj.store.name);
+                            return (
+                            <a href={storeObj.url} target="_blank" rel="noopener noreferrer" 
+                               class="btn w-full flex items-center justify-between h-auto py-3 px-5 bg-slate-700/50 hover:bg-slate-600 border border-slate-600 text-white hover:scale-[1.02] transition-all rounded-xl group">
+                                <div class="flex items-center gap-4">
+                                    <img src={iconUrl} alt={storeObj.store.name} class="w-7 h-7 object-contain drop-shadow" />
+                                    <span class="font-semibold text-base">{storeObj.store.name}</span>
+                                </div>
+                                <span class="text-slate-400 group-hover:text-white transition-colors">↗</span>
+                            </a>
+                        )})}
+                    </div>
+                </section>
+            )}
+
+           
+
+             <section>
+                 <h2 class="text-sm font-bold text-slate-500 mb-3 uppercase tracking-wider">Enlaces Externos</h2>
+                 <div class="flex flex-col gap-2">
+                     {game.website && <a href={game.website} target="_blank" class="link link-hover text-blue-400 text-sm flex items-center gap-1">🌐 Sitio Web Oficial</a>}
+                     {game.reddit_url && <a href={game.reddit_url} target="_blank" class="link link-hover text-orange-400 text-sm flex items-center gap-1">👽 Reddit</a>}
+                 </div>
+             </section>
+
+        </div>
+    </main>
+
+    <Footer />
+    <ChatBot />
+</Layout>

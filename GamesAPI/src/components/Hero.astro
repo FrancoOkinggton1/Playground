@@ -1,0 +1,33 @@
+---
+const { 
+  title = "Fragmentos de Otros Mundos", 
+  subtitle = "Reúne las piezas de tu próxima gran aventura en nuestro universo de juegos." 
+} = Astro.props;
+---
+
+<section class="relative min-h-screen flex items-center justify-center overflow-hidden">
+  
+  <div 
+    class="absolute inset-0 w-full h-full bg-cover bg-center bg-no-repeat fixed z-0"
+    style="background-image: url('/Gemini_Generated_Image_kbm3zfkbm3zfkbm3.png');"
+  >
+  </div>
+
+  <div class="absolute inset-0 z-1 bg-gradient-to-b from-slate-950/60 via-slate-950/40 to-slate-950/80"></div>
+
+  <div class="relative z-10 hero-content text-center px-4">
+    <div class="max-w-3xl">
+      <h1 class="mb-6 text-5xl md:text-7xl font-extrabold text-white tracking-tighter drop-shadow-lg">
+        {title}
+      </h1>
+      
+      <p class="mb-8 text-xl text-slate-200 font-medium drop-shadow-md leading-relaxed">
+        {subtitle}
+      </p>
+      
+      <a href="#catalogo" class="btn btn-primary btn-lg rounded-full px-10 shadow-xl shadow-blue-900/50 hover:scale-105 transition-transform border-none bg-blue-600 hover:bg-blue-500 text-white">
+        Explorar Ahora
+      </a>
+    </div>
+  </div>
+</section>
